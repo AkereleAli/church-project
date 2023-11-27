@@ -2,31 +2,31 @@ require('dotenv').config();
 const models = require('../models');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const {sendEmail, startPayment, completePayment} = require('../services');
+const { sendEmail, startPayment, completePayment } = require('../services');
 
 
-const registerUser = async(req,res) => {
-    try{
-        const {email, username, phone} = req.body;
-        if(!email || !username || !phone) throw new Error('email, username and phone are required');
+const registerUser = async (req, res) => {
+    try {
+        const { email, username, phone } = req.body;
+        if (!email || !username || !phone) throw new Error('email, username and phone are required');
 
         // const checkIfUserExist = await models.User.findOne({where: {email}});
         // if(checkIfUserExist != null) throw new Error('user already exists');
 
-        await models.User.create({...req.body, user_id: uuidv4()});
+        await models.User.create({ ...req.body, user_id: uuidv4() });
 
         const payload = {
             _id: uuidv4(),
             email
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
         res.status(201).json({
             status: true,
-            message:'user registration successful',
+            message: 'user registration successful',
             token: token
         })
 
-    }catch(error) {
+    } catch (error) {
         res.status(500).json({
             status: false,
             message: error.message
@@ -35,23 +35,23 @@ const registerUser = async(req,res) => {
 }
 
 
-const confirmPayment = async(req, res) => {
-    try{
+const confirmPayment = async (req, res) => {
+    try {
         // const { adminKey } = req.headers;
         // if(adminKey != process.env.ADMIN_KEY) throw new Error('unauthorized request');
 
         const { paymentCode } = req.body;
-        if(!paymentCode) throw new Error('payment code is required');
+        if (!paymentCode) throw new Error('payment code is required');
 
-        const checkCode = await models.Payment.findOne({where: {payment_reference: paymentCode}});
-        if(!checkCode) throw new Error('invalid payment code');
-        
+        const checkCode = await models.Payment.findOne({ where: { payment_reference: paymentCode } });
+        if (!checkCode) throw new Error('invalid payment code');
+
         res.status(200).json({
             status: true,
             message: "valid payment code"
         });
 
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
             status: false,
             message: error.message
@@ -60,10 +60,11 @@ const confirmPayment = async(req, res) => {
 }
 
 
-const getTransactions = async(req, res) => {
-    try{
-        // const { authorization } = req.headers;
-        // if(authorization != process.env.ADMIN_KEY) throw new Error('unauthorized request');
+const getTransactions = async (req, res) => {
+    try {
+        const { adminkey } = req.headers
+
+        if (adminkey != process.env.ADMIN_KEY) throw new Error('unauthorized request');
 
         const Transactions = await models.Transaction.findAll({
             attributes: ['amount', 'transaction_id', 'createdAt']
@@ -74,7 +75,7 @@ const getTransactions = async(req, res) => {
             data: Transactions
         })
 
-        }catch(error){
+    } catch (error) {
         res.status(500).json({
             status: false,
             message: error.message
@@ -99,7 +100,7 @@ const makePayment = async (req, res) => {
             payment_reference: reference
         };
         await models.Payment.create(createPayment);
-        
+
         const amountInNaira = parseFloat(completeTransaction.data.data.amount) / 100;
         const createTransaction = {
             transaction_id: uuidv4(),
@@ -107,10 +108,10 @@ const makePayment = async (req, res) => {
             amount: amountInNaira
         };
         await models.Transaction.create(createTransaction);
-        
+
         console.log(reference);
         // send email here
-        
+
         res.status(201).json({
             status: true,
             message: "payment successful"
