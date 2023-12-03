@@ -2,33 +2,29 @@ require('dotenv').config();
 const axios = require('axios');
 
 
-const sendEmail = () => {
-
-}
-
 const startPayment = async (amount, email) => {
     const amountInKobo = amount * 100
-   return  axios({
-                method: "POST",
-                url: `${process.env.PAYSTACK_BASEURL}/transaction/initialize`,
-                headers: {
-                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-       },
-       data: {
-           
-           amount: amountInKobo,
-           email: email
-            
-       },
-       channels : ['card', 'bank', 'transfer', 'USSD']
-                
-   })
-   
+    return axios({
+        method: "POST",
+        url: `${process.env.PAYSTACK_BASEURL}/transaction/initialize`,
+        headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        },
+        data: {
+
+            amount: amountInKobo,
+            email: email
+
+        },
+        channels: ['card', 'bank', 'transfer', 'USSD']
+
+    })
+
 
 
 }
 
-const completePayment = async (reference) => { 
+const completePayment = async (reference) => {
     return axios({
         method: "GET",
         url: `${process.env.PAYSTACK_BASEURL}/transaction/verify/${reference}`,
@@ -36,13 +32,12 @@ const completePayment = async (reference) => {
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         }
 
-})
+    })
 
 }
 
 
 module.exports = {
-    sendEmail,
     startPayment,
     completePayment
 }

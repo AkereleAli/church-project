@@ -2,7 +2,7 @@ require('dotenv').config();
 const models = require('../models');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { sendEmail, startPayment, completePayment } = require('../services');
+const { startPayment, completePayment } = require('../services');
 
 
 const registerUser = async (req, res) => {
@@ -37,8 +37,8 @@ const registerUser = async (req, res) => {
 
 const confirmPayment = async (req, res) => {
     try {
-        // const { adminKey } = req.headers;
-        // if(adminKey != process.env.ADMIN_KEY) throw new Error('unauthorized request');
+        const { adminkey } = req.headers;
+        if(adminkey != process.env.ADMIN_KEY) throw new Error('unauthorized request');
 
         const { paymentCode } = req.body;
         if (!paymentCode) throw new Error('payment code is required');
@@ -108,18 +108,14 @@ const makePayment = async (req, res) => {
             amount: amountInNaira
         };
         await models.Transaction.create(createTransaction);
-
-        console.log(reference);
-        // send email here
-
+                              
         res.status(201).json({
             status: true,
             message: "payment successful"
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
+            res.status(500).json({
             status: false,
             message: error.message
         })

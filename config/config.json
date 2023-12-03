@@ -1,11 +1,10 @@
 {
-  "prodution": {
+  "development": {
     "username": "root",
-    "password": "",
+    "password": null,
     "database": "church-project",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "port": "3306"
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",
@@ -14,12 +13,11 @@
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
-  "development": {
-    "username": "sql8665558",
-    "password": "amX5mV1vfb",
-    "database": "sql8665558",
-    "host": "sql8.freemysqlhosting.net",
-    "dialect": "mysql",
-    "port": "3306"
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
   }
 }
