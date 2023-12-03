@@ -7,8 +7,8 @@ const { startPayment, completePayment } = require('../services');
 
 const registerUser = async (req, res) => {
     try {
-        const { email, username, phone } = req.body;
-        if (!email || !username || !phone) throw new Error('email, username and phone are required');
+        const { email, username, phone, age } = req.body;
+        if (!email || !username || !phone || !age) throw new Error('email, username and phone are required');
 
         // const checkIfUserExist = await models.User.findOne({where: {email}});
         // if(checkIfUserExist != null) throw new Error('user already exists');
